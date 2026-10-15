@@ -1,0 +1,1 @@
+{"jobId": "poc-003", "status": "passed", "testRuns": 1, "changedFiles": ["src/truncate.js"], "summary": "Fixed truncate() to return short text unchanged and otherwise cut to max-1 chars plus an ellipsis."}
