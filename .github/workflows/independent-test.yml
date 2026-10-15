@@ -2,6 +2,7 @@
 # - Runs only on pushes to claude/** branches (the Cloud Worker's job branches).
 # - Uses a standard GitHub-hosted runner (free for public repositories). No secrets are passed.
 # - Read-only token permissions. Does not comment, push, or call external services.
+# - Phase 2: also runs the LUKNA quality tests (.github/quality) and emits one error annotation per failing test.
 name: independent-test
 on:
   push:
@@ -22,18 +23,23 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Verify protected test file is unchanged from main
+      - name: Verify protected files are unchanged from main
         run: |
           git fetch --no-tags --depth=1 origin main
-          git diff --exit-code origin/main -- test/ .github/
-      - name: Run tests (TAP)
-        # shell: bash enables pipefail, so a failing test fails the job even through tee
+          git diff --exit-code origin/main -- test/ .github/ tasks/ CLAUDE.md package.json
+      - name: Run visible and quality tests (TAP)
         shell: bash
-        run: node --test --test-reporter=tap test/sum.test.js | tee test-output.tap
+        run: |
+          set +e
+          node --test --test-reporter=tap test/*.test.js > visible.tap 2>&1
+          node --test --test-reporter=tap .github/quality/*.test.js > quality.tap 2>&1
+          node .github/quality/report.cjs visible.tap quality.tap
       - name: Upload TAP
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: independent-test-tap
-          path: test-output.tap
+          path: |
+            visible.tap
+            quality.tap
           retention-days: 7
