@@ -1,1 +1,1 @@
-{"jobId": "poc-002", "status": "passed", "testRuns": 1, "changedFiles": ["src/clamp.js"], "summary": "Fixed clamp() to honor min by wrapping the result in Math.max(min, ...)."}
+{"jobId": "poc-002", "status": "passed", "testRuns": 1, "changedFiles": ["src/clamp.js"], "summary": "clamp() now honors min and throws RangeError when min > max."}
