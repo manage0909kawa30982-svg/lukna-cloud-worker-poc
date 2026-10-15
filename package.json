@@ -1,0 +1,10 @@
+{
+  "name": "lukna-cloud-worker-poc",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Dummy repository for the LUKNA Cloud Worker PoC. Contains no secrets and no production code.",
+  "scripts": {
+    "test": "node --test --test-reporter=tap test/sum.test.js"
+  },
+  "license": "UNLICENSED"
+}
