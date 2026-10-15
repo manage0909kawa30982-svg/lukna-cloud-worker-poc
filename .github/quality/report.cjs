@@ -12,8 +12,21 @@ for (const file of process.argv.slice(2)) {
     failed++;
     let msg = '';
     for (let j = i + 1; j < Math.min(lines.length, i + 40); j++) {
-      const e = lines[j].match(/^\s*error: ['"|]?(.*?)['"]?$/);
-      if (e) { msg = e[1].trim() || (lines[j + 1] || '').trim(); break; }
+      const e = lines[j].match(/^\s*error:\s*(.*)$/);
+      if (!e) continue;
+      let v = e[1].trim();
+      // YAML block scalar (|-, |, >-, >): the message is on the following lines indented deeper than "error:"
+      if (/^[|>][-+]?$/.test(v)) {
+        const indent = lines[j].match(/^\s*/)[0].length;
+        const block = [];
+        for (let k = j + 1; k < Math.min(lines.length, j + 12); k++) {
+          if (lines[k].trim() && lines[k].match(/^\s*/)[0].length <= indent) break;
+          block.push(lines[k].trim());
+        }
+        v = block.filter(Boolean).join(' ');
+      }
+      msg = v.replace(/^['"]|['"]$/g, '');
+      break;
     }
     const clean = (s) => String(s).replace(/[\r\n%:,]/g, ' ').slice(0, 200);
     console.log(`::error title=${clean(file)}::${clean(m[1])} - ${clean(msg)}`);
