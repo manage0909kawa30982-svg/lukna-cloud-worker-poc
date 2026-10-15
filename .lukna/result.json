@@ -1,0 +1,1 @@
+{"jobId": "poc-001", "status": "passed", "testRuns": 1, "changedFiles": ["src/sum.js"], "summary": "Fixed sum() to return a + b and all 3 tests passed."}
